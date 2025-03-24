@@ -39,7 +39,7 @@
 
 # Chapter IX. Cloud Providers
 ## 1. AWS Infrastructure and Networking
-### Difference between EC2, ECS, EKS, and lambda? When would you use each?
+### 1.1 Difference between EC2, ECS, EKS, and lambda? When would you use each?
 
 #### ECS vs EKS – Simple Overview
 
@@ -108,6 +108,60 @@ Lambda is a serverless computing service.
 You upload code, and AWS runs it when triggered.  
 No server to manage. No infrastructure to maintain.  
 You pay only for actual usage.
+
+### 1.2. How to design a highly available and scalable architect on AWS?
+To build a HA and scalable system on AWS, we need focus on load balancing, multi-az deployments, auto-scaling group, master-slave architect of database.
+
+Design example:
+- User types “www.example.com” -> route 53 resolve DNS
+- Route 53 redirect request to Application Load Balancer
+- ALB routes traffics to an EC2 server running in multi-AZ (thoses server stay in ASG to scale in and out when needed)
+- The application fetches data from the database (Multi-AZ with master and read replicas or all master)
+
+### 1.3. How AWS VPC work? what is subnets, route tables, Internet Gateway, NAT gateway, and security groups?
+- VPC is your own private network inside AWS where you can deploy resources like EC2, RDS, ECS, . It allow you to define IP ranges, subnet, security groups, …
+- Subnet can divide to 2 type, public and private. Public subnet can access from the internet (e.g. Webserver) Private subnet cann’t be access directly from internet (e.g. database)
+- Route table: defines rules for routing traffic between subnets, internet, and external networks.
+- Internet gateway: - Connects the VPC to the public internet
+- NAT Gateway - Secure Outbound internet access - Allows private subnet instances to access the internet without exposing them.
+- Network ACL: control traffic at subnet level, it is stateless (you must allow both inbound and outbound rules separately)
+
+### 1.4. Difference between Security Groups and NACLs in AWS?
+- Security Groups: act as firewall for EC2 instance, work at instance level. it is stateful
+- Example flow: User -> Route 53 -> ALB -> EC2 (public subnet) -> RDS (private subnet). If private instances need updates, they go through a NAT gateway.
+
+### 1.5. How to establish a secure connection between AWS and an on-premise datacenter?
+AWS provide several solution:
+- AWS site-to-site VPN
+- AWS transit gateway
+- AWS direct connect
+
+Site-to-site VPN example:
+- AWS vpc is created, on-pre network has IP range 192.168.1.0/24
+- a Virtual private gateway is attached to the VPC, 
+- a Customer Gateway is setup on-pre network (it is on-pre vpn device, or virtual server). Then setup at both side t connect
+
+### 1.6. How does AWS Transit Gateway work?
+AWS Transit gateway helps to connect between multiple VPC, and on-prem networks.
+
+Before transit gateway, VPC Peering was the primary ways to connect VPCs, but it has many downside (it need multiple connection, no centralize routing - need to configure routing at each VPC)
+
+Transit gateway help to resolve that. It is on central hub ,can connect multiple VPCs, easy scaling, and efficient routing with single route table.
+
+### 1.7. How to setup a multi-region deployment and what challenges you might face?
+Example flow
+- User request -> route 53 routes them to the closest AWS region based on latency.
+- Application Layer:
+User hit ALB in the nearest region
+ALB forwards the request to ECS cluster running web server
+- Database layer: primary DRS in region A with read replicas in region B for failover.
+- If region A fail, route 53 automatically redirect traffic to region B.
+
+**Challenge may facing:**
+Data consistency - syncing data between region is complex
+Latency issues - request may hit far-away regions. -> we can use route 53 latency-based routing.
+Cost - Muti -region replica increase aws cost -> only replicate critical service.
+Failover and DR testing must be implement in detail and concise
 
 ## 2. AWS Security & IAM
 ## 3. CI/CD & Automation in AWS
