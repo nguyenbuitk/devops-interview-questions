@@ -164,7 +164,102 @@ Cost - Muti -region replica increase aws cost -> only replicate critical service
 Failover and DR testing must be implement in detail and concise
 
 ## 2. AWS Security & IAM
+### 2.1. How do you manage IAM roles, users, and policies in a large organization?
+AWS organization:
+- AWS account A (Dev team)
+    - IAM user: dev 1
+    - IAM role: include many policy: full access EC2 + full access S3
+    - Policy: read-only S3
+- AWS account B (DevOps)
+    - IAM user: Devops 1
+    - IAM role: EC2-ROLE
+    - Policy: fulll access S3
+- AWS account C (Finance)
+    - IAM user: finance 1
+    - IAM role: full access cost explorer
+
+### 2.2. What are AWS KMS  (Key Management Service) and Secret Manager, and how do they differ?
+- AWS KMS encrypt data at rest, such as S3 object, using managed encryption keys.
+- AWS Secret Manager store credentials securely (like RDB passwords) and can auto-rotate them.
+- If you need to store sensitive credential securely, use secret manager. 
+
+### 2.3. How do you enforce least privilege access in AWS?
+- The principle of least privilege means giving users, roles and services only the permission they need - nothing more. This reduce security risks.
+- We use IAM Roles instead of users, grant only necessary permissions via fine-grained IAM policies, enfore MFA
+
+### 2.4. How does **AWS GuardDuty, AWS Config and AWS Inspector** help with security?
+- AWS GuardDuty detect real-time security like unauthorized access
+- AWS Config ensures resources follow security policis by detecting misconfiguration
+- AWS Inspector scan EC2 instance and container for vulnerability.
+
+Together, they provide proactive and continuous AWS security monitoring
+
+| AWS Service     | Nghĩa Tiếng Việt                        | Chức Năng                                                                 |
+|-----------------|-----------------------------------------|---------------------------------------------------------------------------|
+| AWS GuardDuty   | Bảo vệ - Canh gác - Giám sát an ninh    | Phát hiện **mối đe dọa bảo mật** trong tài khoản AWS, như truy cập trái phép, hành vi đáng ngờ. |
+| AWS Config      | Cấu hình - Kiểm soát tài nguyên AWS     | Theo dõi **cấu hình AWS**, đảm bảo tuân thủ bảo mật, kiểm tra ai thay đổi tài nguyên.         |
+| AWS Inspector   | Thanh tra - Kiểm tra bảo mật            | **Quét lỗ hổng bảo mật** trong EC2, container, ứng dụng để tìm điểm yếu (CVE, cấu hình sai).  |
+
+### 2.5. How would you secure an S3 bucket that contains sensitive data?
+- Block public access - Prevent unauthorized access
+- Use IAM Policies - Grant least privilege access
+- Encrypt Data (SSE-KMS) - Protect data at rest
+
+### 2.6. What is AWS WAF and how does it protect your infrastructure?
+**Secenario**: A company host a web application on EC2 behind an ALB and wants to:
+- Block SQL injection and XSS attacks
+- Limit requests from abusive users (rate-limiting)
+- Block traffic from high-risk countries.
+
+**Solution**: AWS WAF. Steps setup example
+- Create nd AWS WAF and Web ACL
+- Attach Web ACL to ALB
+- Apply AWS Managed Rules (SQLi, XSS, Bot Control)
+- Add Rate-Limiting & Geo-Blocking rules
+- Monitor blocked requests using AWS WAF logs
+
 ## 3. CI/CD & Automation in AWS
+### 3.1. How would you design a CI/CD pipeline using AWS services?
+Scenario: A company wants to deploy a containerized application to Amazon ECS (Fargate) every time a developer pushes code to a GitHub repository.
+
+**CI/CD Flow on AWS:**
+- Developer push code to Github -> Trigger the pipeline
+- AWS Code pipeline detect the changed and start execute the pineline
+- AWS CodeBuild:
+    + Pull code from github
+    + Build a Docker Image and push to ECR
+- AWS CodeDeploy:
+    + Deploy new docker image to ECS
+- Cloudwatch:
+    + Monitor logs and performance
+
+Pipeline completes, and the new version is live
+
+### 3.2. What is AWS Code Pipeline, and how does it integrate with CodeBuild, CodeDeploy and CodeCommit?
+**Flow Acitivity**
+- Developer push code lên CodeCommit -> Code Pipeline trigger
+- CodeBuild pull code from CodeCommit, run test, build, export packing file
+- CodeDeploy get the packing file and deploy to EC2 with green/blue deployment
+- CloudWatch & SNS sent notification if the deploy success/fail
+
+**Notes**
+- AWS Code Pipeline is automitically service for build, test, and implement appliation quickly.
+- It integrate with CodeCommit to get source code, CodeBuild to test and compile
+- CodeDeploy to deploy the packing file to EC2/ECS or lambda.
+- When developer push code, pipeline automatically run and deploy the update
+
+### 3.3. How can you automate infrastructure provisioning in AWS?
+- In AWS, automate the infrastructure (Infastructure as Code - IaC) help to create, manage and replace the AWS resource effectively.
+- Instead of manually config on AWS console, you can write code to deploy and managed the infrastructure
+
+The automate infrustructure tools on AWS:
+
+| Tools     | Description                        | When to use                                                              |
+|-----------------|-----------------------------------------|---------------------------------------------------------------------------|
+| AWS CloudFormation   | IaC service of AWS.    | When we need to deploy native infrustructure |
+| Terraform      | Popular Iac Service, support multi-cloud (AWS, GCP, Azure)     | When need to deploy on multi platform|
+
+### 3.4. 
 ## 4. Monitoring & Logging
 ## 5. Cost Optimization & Performance Tuning
 
