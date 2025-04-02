@@ -340,5 +340,17 @@ b. logging
     - Optimize by using Auto Scaling, Caching, Read Replicas
 
 ## 5. Cost Optimization & Performance Tuning
+### 5.1. How to opimize AWS costs for high-traffic web application
+- For EC2, ECS, EKS: Use spot instance for non-critical workloads, Reserved Instance or Saving Plans for stable workloads.
+- Using CloudFront to reduce the traffic and cost of S3
+- Monitor AWS Cost Explorer and Compute Opimizer to detect the waste.
 
+### 5.2. What are AWS Savings Plans and Reserved Instances, and when should use them?
+- Reserved Instance (RI) -> Highest discound (up to 72%) but less flexible, suitable for fixed workloads (ECS,RDS). E.g. A company runs EC2 c5.large 24/7 for 3 years -> Use Stardard RI to reduce cost
+- Saving Plans -> up to 66% discount, more flexible than RI, applicaple to EC2, Lambda, Fargate -> Use Compute Saving plands for flexible instance switching
+
+Summary: Choose RI if workload is fixed, choose Saving Plans if workload change overtime
+### 5.3. How to handle auto-scaling efficiently in AWS?
+### 5.4. What tools used for cost monitoring and optimization in AWS?
+### 5.5. How to reduce the cost of an AWS Lambda function that runs frequently?
 # Chapter X. Other Domains
