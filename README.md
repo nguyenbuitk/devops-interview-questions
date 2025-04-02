@@ -259,8 +259,86 @@ The automate infrustructure tools on AWS:
 | AWS CloudFormation   | IaC service of AWS.    | When we need to deploy native infrustructure |
 | Terraform      | Popular Iac Service, support multi-cloud (AWS, GCP, Azure)     | When need to deploy on multi platform|
 
-### 3.4. 
+### 3.4. What is difference between CloudFormation and Terraform? Which one would you choose and why?
+- Both AWS CloudFormatoin and Terrafrom are IaC tools that automate AWS resource provisioning. However, they have key differences in functionality, flexibility and multi-cloud support
+- AWS CloudFormation is AWS-native. Terraform, on the other hand, is multi-cloud on AWS, I'd use CloudFormation for simplicity. But for multi-cloud deployemnts or more flexibility, Terraform is better choice
+
+### 3.5. How to handle blue/green deployments or canary releases in AWS?
+- Blue/Green is strategy in which two enviroments (Blue & Green) run in parallel:
+    - Blue (current) -> Run the old version of the application
+    - Green (new) -> Run the new version of the application
+    - Process:
+        - Deploy the new version (green) in the new env without affecting users.
+        - Test on Green to ensure there are no errors
+        - Switch traffic from Blue to Green by udating DNS, Load Balancer or Route 53.
+        - If there are errors, quickly rollback to Blue
+- Canary Release is a strategy to deploy parts of the new version to a small group of users before expanding the entire version.
+    - Process:
+        - Deploy new version but only send 5-10% of traffic to it.
+        - Monitor performance and check for errors.
+        - If stable, increase traffice from 50% - 100%
+        - If there are errors, rollback to old deployment
+
+### 3.6. How does AWS Elastic Beanstalk comapre to EKS? 
+- Elastic Beanstalk is a PaaS (Platform as a Service) help developer implement the application without manage the infrastructure.
+- Main feature: easy to use - just upload code, AWS take care of the rest (server, scaling, load balancing)
+
 ## 4. Monitoring & Logging
+### 4.1. How to setup monitoring and logging for a production environment in AWS?
+a. monitoring
+- CloudWatch Metric (similar to Prometheous) -> monitor CPU, RAM, Network, custume metrics
+- CloudWatch Alarm -> send alert when exceed the threshold
+
+b. logging
+- CloudWatch logs: Store and analyze logs
+- AWS CloudTrail (similar auditd) -> write log API and event in AWS
+- Opensearch (similar ELK stack/ splunk) -> Store logs from EC2, lambda, ECS, ...
+
+### 4.2. What are the key differences between AWS CloudWatch Logs, Metrics, Alarms:
+- CloudWatch Logs: Store and analyze logs
+- CloudWatch Metrics: Monitor CPU, RAM, network, latency, ...
+- CloudWatch Alarms: Trigger alert when exceed threshold
+
+### 4.3. What is AWS event bridge
+- It help detect and response to the event of AWS in real time. It listen to the event in AWS and trigger the corresponse actions. 
+- Process:
+    - AWS service create event (e.g. EC2 instance is stopped, one file is upload to S3)
+    - CloudWatch events detect the event based on rules.
+    - Trigger action like lambda, SNS, SQS
+
+### 4.4. How does AWS X-Ray help with application performance monitoring?
+- X-Ray similar to Jaeger tool
+- Application send trace data (request infor, response, delay)
+- X-ray using those information to monitor the application, support troubleshoot, debug
+
+### 4.5. What strategies for log aggregation and analysis in AWS?
+- Process implement log aggregation and analysis
+    - Application runing on EC2, Lambda, ECS -> write logs into CloudWatch Logs.
+    - Logs data is sent to Amazon Kinesis Firehose
+    - Firehose sent logs to S3/Opensearch to store and analysis
+    - Analize logs with Opensearch or Athena
+- Summary:
+    - Logs aggregation: CloudWatch logs (real-time), S3 (longtime storage), Opensearch(searching logs)
+    - Logs analyze: Opensearch/kibana
+
+### 4.6. How to troubleshoot high latency or performance issues in AWS?
+- We need to find the root cause, monitor the metrics and optimize system
+- Solution for optimize system and reduce the latency
+    - If the EC2 server is high cpu, ram:
+        - Increase size of instance
+        - Using auto scaling to add/remove instance
+    - If Loadbanacer slow
+        - Inspect the target and distribute the traffic resonalby
+    - If Database is slow
+        - Use Read Replicas (RDS) or DynamoDB to reduce the traffic
+        - Using ElasticCache to cache query
+        - Optimize index and queries on RDS
+- Summary:
+    - Using CloudWatch to montior CPU, RAM, Network when EC2 or Database slow
+    - Using AWS X-Ray to analyze the latency of API Gateway, lambda, ECS/EKS
+    - Using Load Balancer to detect the high reponse time
+    - Optimize by using Auto Scaling, Caching, Read Replicas
+
 ## 5. Cost Optimization & Performance Tuning
 
 # Chapter X. Other Domains
