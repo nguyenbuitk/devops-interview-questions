@@ -351,6 +351,57 @@ b. logging
 
 Summary: Choose RI if workload is fixed, choose Saving Plans if workload change overtime
 ### 5.3. How to handle auto-scaling efficiently in AWS?
+- Use ASG: Managed EC2 instances automatically based on demand.
+- Set Scaling Policis:
+    - Target Tracking: Maintain a metric (e.g., CPU at 50%)
+    - Step Scaling: Scale based on thresholds (e.g. add 2 instances if CPU > 70%)
+    - Scheduled Scaling: Scale at specific times (e.g., peak hours)
+- Use Elastic Load Balancer (ELB): Distribute traffic to healthy instances
+- Use Launch Templates/Configurations: Define instances type, AMI, keys, dependency, ... for consistency.
+
 ### 5.4. What tools used for cost monitoring and optimization in AWS?
-### 5.5. How to reduce the cost of an AWS Lambda function that runs frequently?
+- AWS Cost Explorer:
+    - Visualize cost and usage over time
+    - Analyze spending trends and forecast future costs
+- AWS Budgets:
+    - Set custom cost and usage budgets
+    - Get alerts when usage exceeds thresholds.
+
+### 5.5. How to reduce the cost of an AWS Lambda function that runs frequently? 
+- Right-size memory allocation
+    - Don't over-allocate memory. Use the optimal memory/performance balance
+- Reduce function execution time:
+    - Optimize logic code
+    - Avoid unnecessary dependencies or API calls
+    - Use batched operation where possible
+## 6. Disaster Recovery & Backup
+### 6.1. How do implement a disaster recovery (DR) strategy on AWS?
+a. Backup and restore
+- Regularly backup data to S3, or backup EBS, root volume when using EC2
+- This is daily backup, using for non-critical system
+
+b. ✅ 2. Pilot Light (Low Cost, Medium RTO/RPO)
+What: Keep a minimal version of your environment (e.g., core services, DB) always running.
+
+In disaster: Quickly scale up and deploy full app stack.
+
+Tools: AMIs, CloudFormation, Auto Scaling, RDS Multi-AZ.
+
+✅ 3. Warm Standby (Moderate Cost, Low RTO/RPO)
+What: A scaled-down version of the full environment runs continuously.
+
+In disaster: Scale it up to full capacity quickly.
+
+Tools: Route 53 failover, Auto Scaling, Elastic Load Balancing.
+
+✅ 4. Multi-Site Active-Active (High Cost, Very Low RTO/RPO)
+What: Full production environments in two or more regions, live traffic routing.
+
+Tools: Route 53 latency-based routing, DynamoDB global tables, RDS read replicas.
+
+
+### 6.2. What are the different AWS backup solutions available?
+### 6.3. How would you implement a cross-region replication strategy for S3 and RDS?
+### 6.4. How would you recover from a region-wide AWS outage?
+### 6.5. How do you ensure database backup and restore best practices in AWS?
 # Chapter X. Other Domains
